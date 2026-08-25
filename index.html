@@ -60,27 +60,27 @@
       <h2>University of Delhi • Student ID Verification</h2>
     </div>
 
-    <!-- Loading State -->
-    <div id="loadingState" class="state-box">
+    <!-- Loading State (a11y) -->
+    <div id="loadingState" class="state-box" aria-live="polite" role="status">
       <div class="spinner"></div>
       <p style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Authenticating Student Record...</p>
     </div>
 
-    <!-- Error State -->
-    <div id="errorState" class="state-box" style="display: none;">
+    <!-- Error State (a11y) -->
+    <div id="errorState" class="state-box" style="display: none;" aria-live="polite" role="alert">
       <div class="error-icon">⚠️</div>
       <div id="errorTitle" class="error-title">Verification Failed</div>
       <div id="errorDesc" class="error-desc">Invalid parameters or record tampered with.</div>
     </div>
 
-    <!-- Valid / Success Card UI -->
-    <div id="studentCard" style="display: none;">
+    <!-- Valid / Success Card UI (a11y) -->
+    <div id="studentCard" style="display: none;" aria-live="polite">
       <div id="statusBanner" class="status-banner">● VERIFIED STUDENT RECORD</div>
 
       <div class="content">
         <div class="photo-wrapper">
           <div class="photo-frame">
-            <img id="studentPhoto" class="profile-photo" src="" alt="Student Photo"
+            <img id="studentPhoto" class="profile-photo" src="" alt="Student Profile Photo"
                  onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2394a3b8\' stroke-width=\'2\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'/><circle cx=\'12\' cy=\'7\' r=\'4\'/></svg>';">
           </div>
         </div>
@@ -164,7 +164,6 @@
       const rollNo = urlParams.get('r');
       const token = urlParams.get('t');
 
-      // Set scan timestamp
       const now = new Date();
       document.getElementById('valScannedTime').innerText = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toLowerCase();
       document.getElementById('valGroup').innerText = group;
@@ -176,7 +175,8 @@
 
       try {
         const fetchUrl = `${APPS_SCRIPT_URL}?g=${encodeURIComponent(group)}&r=${encodeURIComponent(rollNo)}&t=${encodeURIComponent(token)}`;
-        const response = await fetch(fetchUrl);
+        // Cache option disabled to prevent stale verification data
+        const response = await fetch(fetchUrl, { cache: "no-store" });
         const data = await response.json();
 
         if (!data.success) {
